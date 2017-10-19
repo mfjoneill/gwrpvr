@@ -199,9 +199,10 @@ gwrpv <- function(beta,n0,n1,n2,mua,siga,mub,sigb,pa,pb,logdelta=-16,lognearnorm
     n0a <- 0
     n1a <- 0
     n2a <- 0
+    vary <- pa * (mua^2 + siga^2) + pb * (mub^2 + sigb^2) - (pa * mua + pb * mub)^2
     # loop over all (untrimmed) outcomes of the three binomial random variables
     pvalue <- loop_calc_pvalue(low[1], high[1], low[2], high[2], low[3], high[3], n0a, n1a, n2a, n0, n1, n2,
-                               pa, pb, x, mua, mub, sumsqx, siga, sigb, beta, skipiter, pvalue)
+                               pa, pb, x, mua, mub, sumsqx, siga, sigb, vary, beta, skipiter, pvalue)
 
     # change to two-tailed pvalue units
     if (beta > 0) {
@@ -399,9 +400,10 @@ gwrpv_batch <- function(regresults,mua,siga,mub,sigb,pa,pb,logdelta=-16,lognearn
       n0a <- 0
       n1a <- 0
       n2a <- 0
+      vary <- pa * (mua^2 + siga^2) + pb * (mub^2 + sigb^2) - (pa * mua + pb * mub)^2
       # loop over all (untrimmed) outcomes of the three binomial random variables
       pvalue[i] <- loop_calc_pvalue(low[1], high[1], low[2], high[2], low[3], high[3], n0a, n1a, n2a, n0[i], n1[i], n2[i],
-                                    pa, pb, x, mua, mub, sumsqx, siga, sigb, beta[i], skipiter, pvalue[i])
+                                    pa, pb, x, mua, mub, sumsqx, siga, sigb, vary, beta[i], skipiter, pvalue[i])
 
       # change to two-tailed pvalue units
       if (beta[i] > 0) {
@@ -448,10 +450,6 @@ gwrpv_batch <- function(regresults,mua,siga,mub,sigb,pa,pb,logdelta=-16,lognearn
 #' @return list(skewbeta = skewbeta, kurtbeta = kurtbeta, sigbeta = sigbeta, skipiter = skipiter)
 #'
 #'
-#'                       .
-#'
-#' @examples
-#' # see gwrpv() usage
 close_to_normal <- function(totnobs, n0, n1, n2, pa, pb, mua, mub, siga, sigb, beta, nearnorm) {
     # compute skewness and kurtosis of the beta coefficient
     skipiter <- 0
@@ -489,8 +487,8 @@ close_to_normal <- function(totnobs, n0, n1, n2, pa, pb, mua, mub, siga, sigb, b
     kurtbeta <- ((1/totnobs))^2 * ((n0 * x0^4 + n1 * x1^4 + n2 * x2^4) * kurty +
                                      3 * (n0 * (n0 - 1) * x0^4 + n1 * (n1 - 1) * x1^4 + n2 * (n2 - 1) * x2^4) +
                                      6 * (n0 * n1 * x0^2 * x1^2 + n0 * n2 * x0^2 * x2^2 + n1 * n2 * x1^2 * x2^2))
-	  skewmjh <- (1/n0)^(.5)*skewy
-	  kurtmjh <- 3 + (1/n0)*(kurty-3)
+	  skewmjh <- (1/n0)^(.5) * skewy
+	  kurtmjh <- 3 + (1/n0) * (kurty - 3)
 
 
     # If the distribution of the y average over the major homozygote subsample is close to normal
@@ -524,10 +522,6 @@ close_to_normal <- function(totnobs, n0, n1, n2, pa, pb, mua, mub, siga, sigb, b
 #' @return c(lhigh, llow))  # return the new upper and lower bounds
 #'
 #'
-#'                       .
-#'
-#' @examples
-#' # see gwrpv() usage
 highlow <- function(downtrim, n, pa, pb) {
     # instantiate local variables which will be returned by highlow function
     llow <- 0  # initial lower bound
@@ -580,19 +574,16 @@ highlow <- function(downtrim, n, pa, pb) {
 #' @param sumsqx sum of the squares of x
 #' @param siga parameter of the mixture distribution, can be any real number
 #' @param sigb parameter of the mixture distribution, can be any real number
+#' @param vary vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2
 #' @param beta the beta from the regression being tested
 #' @param skipiter flag to determine if we can skip some calculations
 #' @param pvalue the input pvalue prior to calculating new improved pvalue
-#' @param vary vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2
 #'
 #' @return pvalue
 #'
 #'
-#'                       .
 #'
-#' @examples
-#' # see loop_calc_pvalue() usage
-calc_pvalue <- function(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb, beta, skipiter, pvalue, vary) {
+calc_pvalue <- function(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb, vary, beta, skipiter, pvalue) {
     n0b <- n0 - n0a
     n1b <- n1 - n1a
     n2b <- n2 - n2a
@@ -615,9 +606,7 @@ calc_pvalue <- function(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, 
 	    # compute the conditional mean and volatility of beta for a given (n1a,n2a)
       condmeanbeta <- ((n1a * x[2] + n2a * x[3]) * mua + (n1b * x[2] + n2b * x[3]) * mub)/sumsqx
       condvarbeta <- (((n1a * (x[2]^2) + n2a * (x[3]^2)) * (siga^2) + (n1b * (x[2]^2) + n2b * (x[3]^2)) * (sigb^2)))/(sumsqx^2)
-
-    	#vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2
-	    condvarbeta <- condvarbeta + n0*x[1]^2*vary/sumsqx^2
+	    condvarbeta <- condvarbeta + n0 * x[1]^2 * vary/sumsqx^2
 	  }
 
   	condvolbeta <- condvarbeta^0.5
@@ -650,6 +639,7 @@ calc_pvalue <- function(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, 
 #' @param sumsqx sum of the squares of x
 #' @param siga parameter of the mixture distribution, can be any real number
 #' @param sigb parameter of the mixture distribution, can be any real number
+#' @param vary vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2
 #' @param beta the beta from the regression being tested
 #' @param skipiter flag to determine if we can skip some calculations
 #' @param pvalue the input pvalue prior to calculating new improved pvalue
@@ -657,17 +647,12 @@ calc_pvalue <- function(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, 
 #' @return pvalue
 #'
 #'
-#'                       .
-#'
-#' @examples
-#' # see gwrpv() usage
-loop_calc_pvalue <- function(lowone, highone, lowtwo, hightwo, lowthree, highthree, n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb,
-    beta, skipiter, pvalue) {
-    vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2
+loop_calc_pvalue <- function(lowone, highone, lowtwo, hightwo, lowthree, highthree,
+                             n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb, vary, beta, skipiter, pvalue) {
     for (n0a in lowone:highone) {
         for (n1a in lowtwo:hightwo) {
             for (n2a in lowthree:highthree) {
-                pvalue <- calc_pvalue(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb, beta, skipiter, pvalue, vary)
+                pvalue <- calc_pvalue(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb, vary, beta, skipiter, pvalue)
             }  #end for n2a
         }  #end for n1a
     }  #end for n0a

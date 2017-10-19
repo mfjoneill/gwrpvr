@@ -16,3 +16,4 @@ has a known Bernoulli-normal mixture distribution.
 The gwrpvr package provides two functions:
 gwrpv and gwrpv_batch.
 }
+

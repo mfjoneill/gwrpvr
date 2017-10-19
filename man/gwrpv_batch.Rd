@@ -69,3 +69,4 @@ gwrpv_batch(myregresults,mua,siga,mub,sigb,pa,pb)
 g <- gwrpv_batch(myregresults,mua,siga,mub,sigb,pa,pb,logdelta=-16,lognearnorm=-4,logtopsum=8)
 g$pvalue
 }
+

@@ -74,3 +74,4 @@ gwrpv(beta,n0,n1,n2,mua,siga,mub,sigb,pa,pb)
 g <- gwrpv(beta,n0,n1,n2,mua,siga,mub,sigb,pa,pb,logdelta=-16,lognearnorm=-5,logtopsum=8)
 g$pvalue
 }
+

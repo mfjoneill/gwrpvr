@@ -34,9 +34,6 @@ close_to_normal(totnobs, n0, n1, n2, pa, pb, mua, mub, siga, sigb, beta,
 }
 \value{
 list(skewbeta = skewbeta, kurtbeta = kurtbeta, sigbeta = sigbeta, skipiter = skipiter)
-
-
-                      .
 }
 \description{
 If the number of observations is large enough that a normality approximation
@@ -49,6 +46,4 @@ kurtosis from their normal values and output stopiter
 (a zero if the code does not mandate a stop to the iterative estimation and a one if it does).
 The input variable lognearnorm has a default value set so that users only have to enter it if they want to over-ride the default value.
 }
-\examples{
-# see gwrpv() usage
-}
+

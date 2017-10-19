@@ -9,3 +9,4 @@ A sample dataset of input regression results based on machine-level accurate cum
 Rather than just typing in a few digits of the 2.5%, .5% and 2.5%x10^(-6) normal p-value cutoffs,
 the norminverse function in RATS was used to create sample-case betas which are exact
 }
+

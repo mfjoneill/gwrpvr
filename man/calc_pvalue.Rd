@@ -5,7 +5,7 @@
 \title{calc_pvalue()}
 \usage{
 calc_pvalue(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb,
-  beta, skipiter, pvalue, vary)
+  vary, beta, skipiter, pvalue)
 }
 \arguments{
 \item{n0a}{outer loop index}
@@ -36,23 +36,18 @@ calc_pvalue(n0a, n1a, n2a, n0, n1, n2, pa, pb, x, mua, mub, sumsqx, siga, sigb,
 
 \item{sigb}{parameter of the mixture distribution, can be any real number}
 
+\item{vary}{vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2}
+
 \item{beta}{the beta from the regression being tested}
 
 \item{skipiter}{flag to determine if we can skip some calculations}
 
 \item{pvalue}{the input pvalue prior to calculating new improved pvalue}
-
-\item{vary}{vary <- pa*(mua^2+siga^2)+pb*(mub^2+sigb^2)-(pa*mua+pb*mub)^2}
 }
 \value{
 pvalue
-
-
-                      .
 }
 \description{
 calculate the pvalue : called from loop_calc_pvalue()
 }
-\examples{
-# see loop_calc_pvalue() usage
-}
+

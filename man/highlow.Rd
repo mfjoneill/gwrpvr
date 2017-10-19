@@ -17,13 +17,8 @@ highlow(downtrim, n, pa, pb)
 }
 \value{
 c(lhigh, llow))  # return the new upper and lower bounds
-
-
-                      .
 }
 \description{
 If possible, trim the upper and lower bounds
 }
-\examples{
-# see gwrpv() usage
-}
+
